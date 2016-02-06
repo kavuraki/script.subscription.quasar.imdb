@@ -1,5 +1,5 @@
 # coding: utf-8
-from tools import *
+from tools2 import *
 from time import time
 from time import asctime
 from time import localtime

@@ -22,7 +22,7 @@
 		<setting type="sep"/>
 		<setting label="32110" type="bool" id="watchlist" enable="eq(-5,true)" default="false"/>
 		<setting label="User's Watchlist(ex:ur0000)" type="text" default="" enable="eq(-1,true)+eq(-6,true)" id="user" />
-		<setting label="Sync list IMDB:" type="bool" id="imdblist" enable="eq(-7,true)" default="false"/>
-		<setting label="List(ex:ls0000)" type="text" default="" enable="eq(-1,true)+eq(-8,true)" id="list" />
+		<setting label="Sync list(s) IMDB:" type="bool" id="imdblist" enable="eq(-7,true)" default="false"/>
+		<setting label="Comma Seperated List(s)(ex:ls0000,ls1111)" type="text" default="" enable="eq(-1,true)+eq(-8,true)" id="list" />
 		</category>
 </settings>

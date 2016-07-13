@@ -58,42 +58,46 @@ def update_service():
                                      silence=True)
         # List
         if settings.value["imdblist"] == 'true' and settings.value["list"] is not '':  # list
+            
+            Lists = settings.value["list"].split(",")
             start = 1
             movieListing = []
             showListing = []
             movieID = []  # IMDB_ID or thetvdb ID
             TV_ID = []  # IMDB_ID or thetvdb ID
-            while True:
-                urlSearch = "http://www.imdb.com/list/%s/?start=%d&view=detail&sort=listorian:asc" % (
-                settings.value["list"], start)
-                settings.notification(settings.string(32044))  # Checking Online
-                settings.log(urlSearch)
-                response = browser.get(urlSearch)
-                if response.status_code == requests.codes.ok:
-                    data = response.text
-                    lines = re.findall('<div class="info">(.*?)</div>', data, re.S)
-                    if len(lines) > 0:
-                        for line in re.findall('<div class="info">(.*?)</div>', data, re.S):
-                            if 'This title is no longer available' not in line:  # prevent the error with not info
-                                items = re.search('/title/(.*?)/(.*?)>(.*?)<', line)
-                                year = re.search('<span class="year_type">(.*?)<', line)
-                                if 'TV Series' in year.group(1):
-                                    showListing.append(items.group(3))  # without year
-                                    TV_ID.append(items.group(1))
-                                else:
-                                    movieListing.append(items.group(3) + ' ' + year.group(1))
-                                    movieID.append(items.group(1))
-                        start += 100
+            
+            for List in Lists:
+                while True:
+                    urlSearch = "http://www.imdb.com/list/%s/?start=%d&view=detail&sort=listorian:asc" % (
+                    List, start)
+                    settings.notification(settings.string(32044))  # Checking Online
+                    settings.log(urlSearch)
+                    response = browser.get(urlSearch)
+                    if response.status_code == requests.codes.ok:
+                        data = response.text
+                        lines = re.findall('<div class="info">(.*?)</div>', data, re.S)
+                        if len(lines) > 0:
+                            for line in re.findall('<div class="info">(.*?)</div>', data, re.S):
+                                if 'This title is no longer available' not in line:  # prevent the error with not info
+                                    items = re.search('/title/(.*?)/(.*?)>(.*?)<', line)
+                                    year = re.search('<span class="year_type">(.*?)<', line)
+                                    if 'TV Series' in year.group(1):
+                                        showListing.append(items.group(3))  # without year
+                                        TV_ID.append(items.group(1))
+                                    else:
+                                        movieListing.append(items.group(3) + ' ' + year.group(1))
+                                        movieID.append(items.group(1))
+                            start += 100
+                        else:
+                            break
                     else:
+                        settings.log(">>>>>>>HTTP %s<<<<<<<" % response.status_code)
+                        settings.notification(message="HTTP %s" % response.status_code, force=True)
                         break
-                else:
-                    settings.log(">>>>>>>HTTP %s<<<<<<<" % response.status_code)
-                    settings.notification(message="HTTP %s" % response.status_code, force=True)
-                    break
-            if len(movieListing) > 0:
-                subscription(movieListing, movieID, 'MOVIE', settings.movieFolder, silence=True, message="List")
-            if len(showListing) > 0:
-                subscription(showListing, [], 'SHOW', settings.show_folder, silence=True,message="List")
+                if len(movieListing) > 0:
+                    subscription(movieListing, movieID, 'MOVIE', settings.movieFolder, silence=True, message="List")
+                if len(showListing) > 0:
+                    subscription(showListing, [], 'SHOW', settings.show_folder, silence=True, message="List")
 
 
 if settings.value['service'] == 'true':
